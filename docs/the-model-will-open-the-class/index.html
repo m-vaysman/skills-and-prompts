@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Model Will Open the Class</title>
+<meta name="description" content="A real EF Core example of why “extend, don’t edit” has to be made operational for coding agents.">
+<meta name="author" content="Michael Vaysman">
+<link rel="canonical" href="https://m-vaysman.github.io/skills-and-prompts/the-model-will-open-the-class/">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Model Will Open the Class">
+<meta property="og:description" content="A real EF Core example of why “extend, don’t edit” has to be made operational for coding agents.">
+<meta property="og:url" content="https://m-vaysman.github.io/skills-and-prompts/the-model-will-open-the-class/">
+<meta property="og:site_name" content="Michael Vaysman">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Model Will Open the Class">
+<meta name="twitter:description" content="A real EF Core example of why “extend, don’t edit” has to be made operational for coding agents.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128274;</text></svg>">
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1c1f23;
+    --muted: #5c6570;
+    --rule: #e3e7ec;
+    --code-bg: #f5f7f9;
+    --code-text: #1c1f23;
+    --link: #0a5fce;
+    --accent: #0a5fce;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1116;
+      --text: #dfe5ec;
+      --muted: #8d97a3;
+      --rule: #262c35;
+      --code-bg: #161b22;
+      --code-text: #dfe5ec;
+      --link: #6cb2ff;
+      --accent: #6cb2ff;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 41rem;
+    margin: 0 auto;
+    padding: 4rem 1.25rem 6rem;
+  }
+
+  header { margin-bottom: 3rem; }
+
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    font-weight: 650;
+  }
+
+  .dek {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0 0 1rem;
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .meta a { color: var(--muted); }
+
+  h2 {
+    font-size: 1.3rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin: 3rem 0 1rem;
+    font-weight: 650;
+  }
+
+  h3 {
+    font-size: 1rem;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+    margin: 2rem 0 0.6rem;
+    font-weight: 650;
+  }
+
+  p { margin: 0 0 1.25rem; }
+
+  a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  strong { font-weight: 650; }
+
+  ul, ol { padding-left: 1.25rem; margin: 0 0 1.25rem; }
+  li { margin-bottom: 0.5rem; }
+
+  blockquote {
+    margin: 0 0 1.25rem;
+    padding: 0.15rem 0 0.15rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    font-size: 1.05rem;
+    font-weight: 500;
+  }
+
+  blockquote p { margin: 0; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.86em;
+    background: var(--code-bg);
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.84rem;
+    color: var(--code-text);
+  }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  footer .bio { margin-bottom: 0.9rem; }
+  footer .bio strong { color: var(--text); }
+  footer .links { margin: 0; }
+  footer .links a { color: var(--link); }
+  footer .sep { padding: 0 0.4rem; opacity: 0.6; }
+
+  @media (max-width: 34rem) {
+    body { font-size: 17px; }
+    .wrap { padding: 2.5rem 1.1rem 4rem; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>The Model Will Open the Class</h1>
+  <p class="dek">A real EF Core example of why “extend, don’t edit” has to be made operational for coding agents.</p>
+  <p class="meta">Michael Vaysman &middot; September 2026 &middot; <a href="https://github.com/m-vaysman/omsloans/pull/83">the pull request on GitHub</a></p>
+</header>
+
+<article>
+
+<p>I did not invent this.</p>
+
+<p>Open/Closed is the O in SOLID: a type should be open for extension and closed for modification. You add behavior beside what already shipped. You do not open the shipped class and type inside it. I learned that years ago, the same way every other .NET developer did. I am not here to teach it.</p>
+
+<p>What interests me is something more practical: an AI coding agent will often violate this rule unless you make the rule concrete.</p>
+
+<p>Not because it does not know SOLID. Ask it about Open/Closed and it will explain it perfectly. The problem appears when there is a ticket to finish.</p>
+
+<p>The shortest path is modification.</p>
+
+<p>Find the class that already does almost what you need. Open it. Add an <code>if</code>. Add a constructor parameter. Add another dependency. Put a provider check into an existing configuration. Make the tests green.</p>
+
+<p>Locally, this often looks reasonable.</p>
+
+<p>Architecturally, it slowly turns stable code into the place where every future requirement goes to live.</p>
+
+<h2>A real ticket</h2>
+
+<p>I recently gave an agent a straightforward change to an existing .NET application: add PostgreSQL as an optional database provider while leaving SQL Server as the default.</p>
+
+<p>The application already had an EF Core <code>DbContext</code>, entity configuration, SQL Server registration, migrations, tests, an API host, and a worker.</p>
+
+<p>This is exactly the sort of request where modification is tempting.</p>
+
+<p>PostgreSQL disagreed with several SQL Server-specific mappings:</p>
+
+<ul>
+  <li><code>varbinary(max)</code> needed to become PostgreSQL <code>bytea</code>.</li>
+  <li><code>nvarchar(max)</code> needed to become <code>text</code>.</li>
+  <li>An index filter used SQL Server identifier quoting.</li>
+  <li>A calendar value needed PostgreSQL's <code>date</code> mapping.</li>
+  <li>PostgreSQL's provider imposed stricter UTC handling for timestamps.</li>
+</ul>
+
+<p>There is an obvious implementation.</p>
+
+<h2>The obvious implementation</h2>
+
+<p>Open the existing EF configuration and teach it about both databases.</p>
+
+<pre><code>// Existing configuration
+
+if (provider == DatabaseProvider.Postgres)
+{
+    property.HasColumnType("bytea");
+}
+else
+{
+    property.HasColumnType("varbinary(max)");
+}</code></pre>
+
+<p>Repeat that wherever the providers disagree.</p>
+
+<pre><code>if (postgres)
+{
+    index.HasFilter("\"EmailMessageId\" IS NOT NULL");
+}
+else
+{
+    index.HasFilter("[EmailMessageId] IS NOT NULL");
+}</code></pre>
+
+<p>Perhaps add the provider to the <code>DbContext</code>. Perhaps pass configuration farther down. Perhaps make the old registration method smart enough to understand another database.</p>
+
+<p>None of these changes is insane.</p>
+
+<p>That is why this problem matters.</p>
+
+<p>Bad architectural drift rarely arrives as obviously bad code. It arrives as a sequence of reasonable edits to code that already worked.</p>
+
+<h2>The constraint</h2>
+
+<p>For this work, the existing <code>OmsLoanDbContext</code>, entity configurations, and SQL Server registration were treated as closed.</p>
+
+<p>The instruction was effectively:</p>
+
+<pre><code>EXTEND
+
+The old implementation is read-only.
+
+You may add new files.
+You may add tests.
+You may change composition where the application is already wired.
+
+If the requested behavior requires changing the locked implementation,
+stop and report that the seam is missing.</code></pre>
+
+<p>This changes the agent's problem.</p>
+
+<p>The question is no longer:</p>
+
+<blockquote><p>Where can I put the PostgreSQL behavior?</p></blockquote>
+
+<p>It becomes:</p>
+
+<blockquote><p>What extension seam already exists?</p></blockquote>
+
+<p>That is a much better question.</p>
+
+<h2>EF Core already had the seam</h2>
+
+<p>The agent found <code>IModelCustomizer</code>.</p>
+
+<p>EF Core builds its model and exposes a framework-level customization point. The PostgreSQL path could therefore allow the existing model to be built normally, then apply only the PostgreSQL-specific differences afterward.</p>
+
+<p>A new type was added:</p>
+
+<pre><code>public sealed class PostgresModelCustomizer
+    : ModelCustomizer
+{
+    public override void Customize(
+        ModelBuilder modelBuilder,
+        DbContext context)
+    {
+        base.Customize(modelBuilder, context);
+
+        // PostgreSQL-specific overrides live here.
+    }
+}</code></pre>
+
+<p>That call to <code>base.Customize</code> is the important part.</p>
+
+<p>The existing model still builds itself. The existing SQL Server configuration does not need to know PostgreSQL exists.</p>
+
+<p>The new provider adds its differences afterward.</p>
+
+<p>For example:</p>
+
+<pre><code>modelBuilder.Entity&lt;Notice&gt;()
+    .Property(n =&gt; n.Content)
+    .HasColumnType("bytea");
+
+modelBuilder.Entity&lt;Extraction&gt;()
+    .Property(e =&gt; e.RawJson)
+    .HasColumnType("text");</code></pre>
+
+<p>The old configuration did not become:</p>
+
+<pre><code>SQL Server + PostgreSQL + every provider we may support someday</code></pre>
+
+<p>It remained the thing it already was.</p>
+
+<h2>The provider installs the extension</h2>
+
+<p>The PostgreSQL registration then tells EF Core to replace the normal model customizer only when the PostgreSQL path is selected.</p>
+
+<pre><code>return options
+    .UseNpgsql(connectionString, npgsql =&gt;
+        npgsql.MigrationsAssembly(postgresAssembly))
+    .ReplaceService&lt;IModelCustomizer, PostgresModelCustomizer&gt;();</code></pre>
+
+<p>This is what extension looks like in a framework-heavy application.</p>
+
+<p>No inheritance hierarchy had to be invented. No artificial interface had to be placed around the application's own classes. No textbook pattern had to be forced into the design.</p>
+
+<p>The framework already provided a seam.</p>
+
+<p>The job was to find it.</p>
+
+<h2>The old path remained the old path</h2>
+
+<p>Provider selection was added outside the existing SQL Server implementation.</p>
+
+<p>Conceptually:</p>
+
+<pre><code>if (provider is missing or SqlServer)
+    use existing SQL Server registration;
+
+if (provider is Postgres)
+    use new PostgreSQL registration;</code></pre>
+
+<p>Notice what did not happen.</p>
+
+<p>The old SQL Server registration was not rewritten to become a universal database factory. The new layer delegates to it unchanged when SQL Server is selected.</p>
+
+<p>That distinction looks small in a diff. It is large in a codebase.</p>
+
+<h2>The composition root is allowed to know</h2>
+
+<p>Something eventually has to choose the implementation.</p>
+
+<p>Before the change, the hosts contained essentially:</p>
+
+<pre><code>builder.Services.AddOmsLoanDbContext(connectionString);</code></pre>
+
+<p>Afterward:</p>
+
+<pre><code>builder.Services.AddOmsLoanDatabase(
+    builder.Configuration,
+    connectionString);</code></pre>
+
+<p>That is a modification, but it is not a violation of Open/Closed.</p>
+
+<p>Composition is where choices belong.</p>
+
+<p>If adding a new implementation were forbidden from changing the place where implementations are selected, almost no real system could ever be extended.</p>
+
+<p>The useful rule is not “never modify any existing file.”</p>
+
+<p>It is:</p>
+
+<blockquote><p>Do not put the new behavior inside the old implementation. Change only the place where the application chooses which implementation to use.</p></blockquote>
+
+<h2>The diff tells the story</h2>
+
+<p>The resulting pull request added a separate <code>OmsLoan.Data.Postgres</code> project, PostgreSQL migrations, provider-selection code, Docker Compose configuration, documentation, and a dedicated test project.</p>
+
+<p>The existing <code>OmsLoanDbContext</code>, existing entity configurations, and existing SQL Server registration were absent from the diff.</p>
+
+<p>That is a useful review heuristic.</p>
+
+<pre><code>Expected EXTEND diff:
+
++ new implementation
++ new tests
++ provider-specific infrastructure
+~ minimal composition wiring
+
+  old implementation: untouched</code></pre>
+
+<p>You can almost evaluate the architecture before reading the code.</p>
+
+<p>If the supposedly closed class appears in an EXTEND diff, there had better be an explanation.</p>
+
+<h2>The tests matter for a different reason</h2>
+
+<p>The new tests did not merely demonstrate that PostgreSQL worked.</p>
+
+<p>They also demonstrated that the old path remained the old path.</p>
+
+<pre><code>[Theory]
+[InlineData(null)]
+[InlineData("")]
+[InlineData("SqlServer")]
+public void SqlServerIsUsedUnlessPostgresIsConfigured(...)
+{
+    // Resolve the context.
+
+    Assert.Equal(
+        "Microsoft.EntityFrameworkCore.SqlServer",
+        context.Database.ProviderName);
+}</code></pre>
+
+<p>Separate tests verified that selecting PostgreSQL resolved Npgsql.</p>
+
+<p>That distinction is important.</p>
+
+<p>An extension test should answer two questions:</p>
+
+<ol>
+  <li>Does the new behavior work?</li>
+  <li>Did we accidentally change the old behavior while adding it?</li>
+</ol>
+
+<p>The pull request reported 395 passing tests, including 22 new tests covering provider selection, PostgreSQL mappings, UTC handling, preservation of the SQL Server model, and migration/model agreement.</p>
+
+<h2>A useful failure also appeared</h2>
+
+<p>One known limitation was left unresolved.</p>
+
+<p>An invalid provider name causes a startup exception. Making that failure integrate cleanly with the application's existing startup validation would require changing an existing type on the established code path.</p>
+
+<p>The agent did not quietly make that edit.</p>
+
+<p>It identified it as separate CHANGE work.</p>
+
+<p>This may be the most important behavior in the entire exercise.</p>
+
+<p>Open/Closed does not mean every ticket can be completed by extension.</p>
+
+<p>Sometimes the seam is missing.</p>
+
+<p>The discipline is being able to say so.</p>
+
+<h2>Why agents need the rule stated this way</h2>
+
+<p>“Follow SOLID” is too abstract.</p>
+
+<p>“Prefer Open/Closed” is too negotiable.</p>
+
+<p>Under pressure to complete a task, a coding model can always explain why editing the existing class is simpler, smaller, safer, or more idiomatic.</p>
+
+<p>Often it is simpler.</p>
+
+<p>That is the problem.</p>
+
+<p>The instruction that changed the outcome was mechanical:</p>
+
+<pre><code>The old type is locked.
+
+If an extension seam exists, use it.
+
+If no seam exists, stop.
+
+Do not create the seam by editing the locked type.</code></pre>
+
+<p>Once modification was removed as the default escape hatch, the model had to inspect the architecture around the class.</p>
+
+<p>And there was the seam: not hidden, not exotic, not invented for the exercise. EF Core had already provided it.</p>
+
+<h2>This changes what code review looks like</h2>
+
+<p>I increasingly think this is useful beyond AI.</p>
+
+<p>Instead of beginning a review with:</p>
+
+<blockquote><p>Is this code good?</p></blockquote>
+
+<p>begin with:</p>
+
+<blockquote><p>Why did this existing file have to change?</p></blockquote>
+
+<p>Sometimes there is a good answer.</p>
+
+<p>A bug is inside that type. Its contract is wrong. The architecture genuinely lacks the seam required for the new behavior.</p>
+
+<p>Fine. Call that CHANGE.</p>
+
+<p>But a new feature should not automatically inherit permission to rewrite the thing beside it.</p>
+
+<p>Make the distinction explicit.</p>
+
+<h2>EXTEND and CHANGE</h2>
+
+<p>I now prefer tickets to have one of two meanings.</p>
+
+<h3>EXTEND</h3>
+
+<p>Existing production behavior is locked. Add new types beside it. Use existing interfaces, decorators, factories, framework hooks, middleware, strategies, providers, callbacks, or composition seams.</p>
+
+<p>If the seam does not exist, stop.</p>
+
+<h3>CHANGE</h3>
+
+<p>A named existing type may be edited because the required seam does not exist or because that type itself is what the ticket intends to change.</p>
+
+<p>CHANGE is explicit. It is scoped. It is not permission to clean up the neighborhood.</p>
+
+<h2>The lesson from the PostgreSQL change</h2>
+
+<p>The PostgreSQL pull request is not interesting because it contains an ingenious pattern.</p>
+
+<p>It is interesting because it does not.</p>
+
+<p>EF Core already knew how to be extended. The original application's classes did not need to be redesigned.</p>
+
+<p>The agent simply had to be prevented from taking the easiest route long enough to discover the route the framework had already provided.</p>
+
+<p>That is the practical version of Open/Closed I care about.</p>
+
+<p>Not:</p>
+
+<blockquote><p>Can you explain the O in SOLID?</p></blockquote>
+
+<p>But:</p>
+
+<blockquote><p>There is a working class in front of you. The ticket asks for new behavior. Are you going to open it?</p></blockquote>
+
+<p>Left alone, the model often will.</p>
+
+<p>Lock the class.</p>
+
+</article>
+
+<footer>
+  <p class="bio"><strong>Michael Vaysman</strong> builds software for capital markets &mdash; seventeen years of it, on trading desks and on the engineering teams behind them. Mostly C# and SQL Server, mostly the parts that have to still work years later.</p>
+  <p class="links">
+    <a href="https://github.com/m-vaysman/omsloans/pull/83">The pull request</a>
+    <span class="sep">&middot;</span>
+    <a href="https://github.com/m-vaysman/skills-and-prompts/tree/main/skills">The skill</a>
+    <span class="sep">&middot;</span>
+    <a href="https://github.com/m-vaysman">GitHub</a>
+    <span class="sep">&middot;</span>
+    <a href="https://www.linkedin.com/in/michael-v-5961689/">LinkedIn</a>
+    <span class="sep">&middot;</span>
+    <a href="mailto:mvaysman@pm.me">mvaysman@pm.me</a>
+  </p>
+</footer>
+
+</div>
+</body>
+</html>
