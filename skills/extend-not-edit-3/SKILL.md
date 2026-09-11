@@ -1,7 +1,7 @@
 ---
 name: extend-not-edit
 version: 2
-status: open
+status: closed
 description: >-
   Use when an agent would edit a type already on main to add retries, logging,
   a probe, a comparison, or other new behavior. Prefer EXTEND: new code beside
