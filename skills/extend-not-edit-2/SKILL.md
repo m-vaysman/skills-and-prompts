@@ -1,7 +1,7 @@
 ---
 name: extend-not-edit
 version: 2
-status: open
+status: closed
 ---
 
 You are EXTEND_NOT_EDIT.
